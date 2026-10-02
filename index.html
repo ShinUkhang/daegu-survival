@@ -95,12 +95,12 @@
     <h1 id="t-title">대구 서바이벌</h1>
     <p class="sub" id="t-sub">좀비 비둘기 무리가 몰려온다!<br>후더덕과 함께 대구 여행에서 살아남아라 🦆🍗</p>
     <div class="howto" id="t-howto">
-      🕹️ <b>이동:</b> WASD / 방향키 / 화면 왼쪽 드래그(조이스틱)<br>
-      🍗 <b>공격:</b> 자동! 대구 명물 무기 6종으로 싸워요<br>
+      🕹️ <b>이동:</b> WASD / 방향키 / 화면 드래그(조이스틱)<br>
+      🍗 <b>공격:</b> 자동! 대구 명물 무기 7종으로 싸워요<br>
       💎 <b>성장:</b> 기념품 젬을 모아 레벨업 → 3장 중 1장 선택<br>
       👹 <b>보스:</b> 90초마다 비둘기왕 출현!<br>
-      🍗 <b>아이템:</b> 치킨(체력 회복), 자석(젬 흡수)<br>
-      🗺️ <b>여행지:</b> 대구역→동성로→서문시장→수성못→83타워
+      🍗 <b>아이템:</b> 치킨·뭉티기(체력 회복), 자석(젬 흡수)<br>
+      🗺️ <b>여행지:</b> 대구역→동성로→서문시장→수성못→83타워→라이온즈파크
     </div>
     <div id="lang-sw"><button id="lang-ko" class="langbtn">한국어</button><button id="lang-ja" class="langbtn">日本語</button></div>
     <button class="pxbtn" id="btn-start-ta" style="margin-bottom:10px">🏆 타임어택 (2분)</button><br>
@@ -221,7 +221,7 @@ cv.addEventListener('pointerdown',e=>{
   if(e.pointerType==='touch'||e.pointerType==='pen'){
     const r=cv.getBoundingClientRect();
     const x=e.clientX-r.left,y=e.clientY-r.top;
-    if(x<r.width*0.55&&!joy.active){joy.active=true;joy.id=e.pointerId;joy.bx=x;joy.by=y;joy.dx=0;joy.dy=0;joyShow(e.clientX-60,e.clientY-60);cv.setPointerCapture(e.pointerId);}
+    if(!joy.active){joy.active=true;joy.id=e.pointerId;joy.bx=x;joy.by=y;joy.dx=0;joy.dy=0;joyShow(e.clientX-60,e.clientY-60);try{cv.setPointerCapture(e.pointerId);}catch(_){}}
   }
 });
 cv.addEventListener('pointermove',e=>{if(joy.active&&e.pointerId===joy.id){const r=cv.getBoundingClientRect();joyMove(e.clientX-r.left,e.clientY-r.top);}});
@@ -291,8 +291,51 @@ const LANDMARKS=[
   {f:'canal',x:900,y:1050,label:'🎡 이월드',lja:'🎡 イーワールド',beneCd:0},
   {f:'kushida',x:2320,y:1230,label:'🔥 대프리카',lja:'🔥 テグリカ',beneCd:0},
   {f:'ohori',x:1150,y:1450,label:'🌳 수성못',lja:'🌳 寿城池',beneCd:0},
+  {f:'lions',x:2450,y:300,label:'⚾ 라이온즈파크',lja:'⚾ ライオンズパーク',beneCd:0},
 ];
 
+function drawLions(px,py,t){
+  // baseball stadium
+  softShadow(px,py+10,125,85,0.3);
+  let sg=gradC(px-40,py-40,10,130,'#9aa3b8','#5c6579');
+  ctx.fillStyle=sg;ctx.beginPath();ctx.ellipse(px,py,118,80,0,0,TAU);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=3;
+  ctx.beginPath();ctx.ellipse(px,py,118,80,0,0,TAU);ctx.stroke();
+  // stands stripes
+  ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=6;
+  ctx.beginPath();ctx.ellipse(px,py,104,70,0,0,TAU);ctx.stroke();
+  // field
+  sg=gradC(px-30,py-30,8,95,'#7ed07e','#3f9e4d');
+  ctx.fillStyle=sg;ctx.beginPath();ctx.ellipse(px,py,92,62,0,0,TAU);ctx.fill();
+  // infield dirt diamond
+  ctx.fillStyle='#d9a86c';
+  ctx.save();ctx.translate(px,py+6);ctx.rotate(Math.PI/4);ctx.fillRect(-26,-26,52,52);ctx.restore();
+  // grass infield
+  sg=gradC(px,py,4,40,'#8fdd8f','#4da85c');
+  ctx.fillStyle=sg;ctx.save();ctx.translate(px,py+6);ctx.rotate(Math.PI/4);ctx.fillRect(-19,-19,38,38);ctx.restore();
+  // mound + home plate
+  ctx.fillStyle='#e8c48a';ctx.beginPath();ctx.arc(px,py-2,7,0,TAU);ctx.fill();
+  ctx.fillStyle='#fff';ctx.save();ctx.translate(px,py+30);ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.restore();
+  // foul lines
+  ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(px,py+30);ctx.lineTo(px-52,py-22);ctx.moveTo(px,py+30);ctx.lineTo(px+52,py-22);ctx.stroke();
+  // floodlights
+  for(const fx of [-1,1]){
+    const qx=px+fx*105,qy=py-72;
+    ctx.fillStyle='#4a4a55';ctx.fillRect(qx-3,qy,6,66);
+    ctx.fillStyle='#3a3a44';RR(qx-16,qy-16,32,18,4);ctx.fill();
+    ctx.fillStyle='#fffbe0';
+    for(let li=0;li<4;li++){ctx.beginPath();ctx.arc(qx-10+li*7,qy-7,2.6,0,TAU);ctx.fill();}
+    const gl=ctx.createRadialGradient(qx,qy-7,2,qx,qy-7,26);
+    gl.addColorStop(0,'rgba(255,250,210,.5)');gl.addColorStop(1,'rgba(255,250,210,0)');
+    ctx.fillStyle=gl;ctx.beginPath();ctx.arc(qx,qy-7,26,0,TAU);ctx.fill();
+  }
+  // big screen
+  ctx.fillStyle='#2b2f3a';RR(px-30,py-112,60,26,5);ctx.fill();
+  ctx.fillStyle='#7dff8a';ctx.font='900 11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('LIONS',px,py-94);
+  HL(px-38,py-40,30,12);
+}
 function drawOhori(px,py,t){
   // big park
   const pg=gradC(px,py,10,235,'#5f8f4b','#3a6a34');
@@ -477,6 +520,7 @@ function drawGround(camX,camY,t){
     else if(L.f==='tower')drawTower(lx,ly);
     else if(L.f==='canal')drawFerris(lx,ly);
     else if(L.f==='kushida')drawHeat(lx,ly);
+    else if(L.f==='lions')drawLions(lx,ly,t);
     // name sign
     ctx.font='900 13px sans-serif';ctx.textAlign='center';
     const tw=ctx.measureText(LL(L)).width;
@@ -762,6 +806,19 @@ function drawPickup(p,camX,camY,t){
     ctx.beginPath();ctx.moveTo(x-8,y);ctx.quadraticCurveTo(x,y-4,x+8,y+2);ctx.stroke();
     return;
   }
+  if(p.kind==='mungtigi'){
+    ELL(x,y+10,14,4,'rgba(0,0,0,.25)');
+    ctx.fillStyle='#f4f6fa';ctx.beginPath();ctx.ellipse(x,y,15,10.5,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#e2e8f2';ctx.beginPath();ctx.ellipse(x,y,11,7.5,0,0,TAU);ctx.fill();
+    const mg2=gradC(x-4,y-4,2,10,'#ff8080','#c92a2a');
+    ctx.fillStyle=mg2;
+    ctx.beginPath();ctx.ellipse(x-4,y,6,4.5,0.3,0,TAU);ctx.fill();
+    ctx.beginPath();ctx.ellipse(x+4,y+1,6,4.5,-0.3,0,TAU);ctx.fill();
+    const yg=gradC(x,y-8,1,7,'#ffe27a','#f5a623');
+    ctx.fillStyle=yg;ctx.beginPath();ctx.arc(x,y-3,5,0,TAU);ctx.fill();
+    HL(x-2,y-5,3,2);
+    return;
+  }
   ELL(x,y+10,12,4,'rgba(0,0,0,.25)');
   if(p.kind==='corn'){
     // fried chicken drumstick (daegu chimaek)
@@ -886,6 +943,17 @@ function SH(x,y,w){ ctx.fillStyle="rgba(0,0,0,.22)"; ctx.beginPath(); ctx.ellips
 function FKHL(x,y,w,h){ ctx.fillStyle="rgba(255,255,255,.35)"; RR(x,y,w,h,Math.min(w,h)/2); ctx.fill(); }
 function drawBullet(b,camX,camY){
   const x=b.x-camX,y=b.y-camY;
+  if(b.mandu){
+    ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(b.vy,b.vx));
+    ELL(0,1,10,7,'rgba(0,0,0,.18)');
+    const mg=ctx.createLinearGradient(0,-6,0,6);
+    mg.addColorStop(0,'#ffe9a8');mg.addColorStop(0.55,'#f5b83d');mg.addColorStop(1,'#d98a1f');
+    ctx.fillStyle=mg;ctx.beginPath();ctx.ellipse(0,0,9,6,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#c97a15';
+    for(let di=0;di<5;di++){const da=di/5*TAU;ctx.beginPath();ctx.arc(Math.cos(da)*6.5,Math.sin(da)*4,1.2,0,TAU);ctx.fill();}
+    HL(-3,-4,5,2.5);
+    ctx.restore();return;
+  }
   ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(b.vy,b.vx));
   ctx.fillStyle='rgba(255,220,80,.35)';ELL(0,0,14,7,'rgba(255,220,80,.35)');
   const g=ctx.createLinearGradient(-8,0,10,0);
@@ -900,7 +968,7 @@ try{LANG=localStorage.getItem('daegu_lang')||'ko';}catch(e){}
 if(LANG!=='ja')LANG='ko';
 const STR={
 ko:{title:'대구 서바이벌',subtitle:'좀비 비둘기 무리가 몰려온다!<br>후더덕과 함께 대구 여행에서 살아남아라 🦆🍗',
-howto:'🕹️ <b>이동:</b> WASD / 방향키 / 화면 왼쪽 드래그(조이스틱)<br>🍗 <b>공격:</b> 자동! 대구 명물 무기 6종으로 싸워요<br>💎 <b>성장:</b> 기념품 젬을 모아 레벨업 → 3장 중 1장 선택<br>👹 <b>보스:</b> 90초마다 비둘기왕 출현!<br>🍗 <b>아이템:</b> 치킨(체력 회복), 자석(젬 흡수)<br>🗺️ <b>여행지:</b> 대구역→동성로→서문시장→수성못→83타워',
+howto:'🕹️ <b>이동:</b> WASD / 방향키 / 화면 드래그(조이스틱)<br>🍗 <b>공격:</b> 자동! 대구 명물 무기 7종으로 싸워요<br>💎 <b>성장:</b> 기념품 젬을 모아 레벨업 → 3장 중 1장 선택<br>👹 <b>보스:</b> 90초마다 비둘기왕 출현!<br>🍗 <b>아이템:</b> 치킨·뭉티기(체력 회복), 자석(젬 흡수)<br>🗺️ <b>여행지:</b> 대구역→동성로→서문시장→수성못→83타워→라이온즈파크',
 start:'게임 시작',best:'🏆 최고 기록: ',levelup:'⬆️ 레벨 업! 업그레이드 선택',levelup_sub:'3장 중 하나를 골라줘',stat_up:'스탯 강화',
 paused:'⏸ 일시정지',resting:'잠시 쉬는 중...',resume:'계속하기',quit:'그만하기',gameover:'💀 게임 오버',
 over1:'좀비 비둘기들에게 여행을 방해받았어요...',over2:'꽥! 다음엔 대구역부터 다시!',over3:'후더덕의 대구 여행은 계속된다!',
@@ -912,6 +980,7 @@ final_spawn:'👑 끝판왕 비둘기 황제 출현!',victory:'🎉 클리어!',
 elite_spawn:'✨ 엘리트 출현!',
 bene_torii:'🏃 동성로 질주! 이동속도 UP (10초)',bene_shrine:'🙏 갓바위 소원! 젬 2배 (20초)',
 bene_yatai:'🍗 야시장 먹방! 체력 풀회복',bene_retro:'🚂 추억 여행! 젬 전부 흡수',
+bene_lions:'⚾ 홈런 타임! 10초간 공격력 2배!',bene_mung:'🥩 뭉티기! 체력 +60',
 bene_school:'📣 계명대 응원! 공격력 UP (15초)',bene_tower:'🗼 83타워 전망대! 쿨다운 감소 (20초)',
 bene_canal:'🎡 이월드! 무기 강화',bene_kushida:'🔥 대프리카! 무적 (8초)',
 bene_giant:'🍗 파워 치킨! 거대 오리 변신! (12초)',cat_spawn:'🐱 거대 고양이 출현!',
@@ -924,7 +993,7 @@ sc_title:'🏆 타임어택 결과',sc_score:'점수',sc_name_ph:'이름 입력 
 sc_save:'📸 이미지 저장',sc_again:'다시 도전',sc_board:'🏆 명예의 전당',
 sc_timeup:'시간 종료!',sc_died:'전사...',ta_time:'남은 시간',plane_takeoff:'🛫 대구로 출발!',plane_fly:'✈️ 대구로 비행 중...',plane_arrive:'🛬 대구 도착!',plane_skip:'탭하여 건너뛰기'},
 ja:{title:'大邱サバイバル',subtitle:'ゾンビ鳩の群れがやってくる!<br>フードックと一緒に大邱旅行を生き残れ 🦆🍗',
-howto:'🕹️ <b>移動:</b> WASD / 矢印キー / 画面左ドラッグ(ジョイスティック)<br>🍗 <b>攻撃:</b> 自動! 大邱名物武器6種で戦おう<br>💎 <b>成長:</b> お土産ジェムを集めてレベルアップ → 3枚から1枚選択<br>👹 <b>ボス:</b> 90秒ごとに鳩王出現!<br>🍗 <b>アイテム:</b> チキン(体力回復)、磁石(ジェム吸収)<br>🗺️ <b>旅行地:</b> 大邱駅→東城路→西門市場→寿城池→83タワー',
+howto:'🕹️ <b>移動:</b> WASD / 矢印キー / 画面ドラッグ(ジョイスティック)<br>🍗 <b>攻撃:</b> 自動! 大邱名物武器7種で戦おう<br>💎 <b>成長:</b> お土産ジェムを集めてレベルアップ → 3枚から1枚選択<br>👹 <b>ボス:</b> 90秒ごとに鳩王出現!<br>🍗 <b>アイテム:</b> チキン・モンティギ(体力回復)、磁石(ジェム吸収)<br>🗺️ <b>旅行地:</b> 大邱駅→東城路→西門市場→寿城池→83タワー→ライオンズパーク',
 start:'ゲームスタート',best:'🏆 最高記録: ',levelup:'⬆️ レベルアップ! 選択',levelup_sub:'3枚から1枚選んでね',stat_up:'ステータス強化',
 paused:'⏸ 一時停止',resting:'休憩中...',resume:'つづける',quit:'やめる',gameover:'💀 ゲームオーバー',
 over1:'ゾンビ鳩に旅行を邪魔されちゃった...',over2:'ガー! 次は大邱駅からリベンジ!',over3:'フードックの大邱旅行は続く!',
@@ -936,6 +1005,7 @@ final_spawn:'👑 最終ボス 鳩皇帝出現!',victory:'🎉 クリア!',victo
 elite_spawn:'✨ エリート出現!',
 bene_torii:'🏃 東城路ダッシュ! 移動速度UP (10秒)',bene_shrine:'🙏 石仏の願い! ジェム2倍 (20秒)',
 bene_yatai:'🍗 夜市場モッパン! 体力全回復',bene_retro:'🚂 思い出旅行! ジェム全部吸収',
+bene_lions:'⚾ ホームランタイム! 10秒間攻撃力2倍!',bene_mung:'🥩 モンティギ! 体力+60',
 bene_school:'📣 啓明大学応援! 攻撃力UP (15秒)',bene_tower:'🗼 83タワー展望台! クールダウン減少 (20秒)',
 bene_canal:'🎡 イワールド! 武器強化',bene_kushida:'🔥 テグリカ! 無敵 (8秒)',
 bene_giant:'🍗 パワーチキン! 巨大アヒル変身! (12秒)',cat_spawn:'🐱 巨大猫出現!',
@@ -998,6 +1068,7 @@ const WEAPONS={
   orbit:  {name:'궤도 약령환',icon:'💊',max:5,desc:'약령시 한약환이 빙글빙글',nja:'軌道薬令丸',dja:'薬令市の漢方丸がぐるぐる'},
   frost:  {name:'수성못 빙수',icon:'🍧',max:5,desc:'빙수 폭발로 동결 + 감속',nja:'寿城池かき氷',dja:'かき氷爆発で凍結+減速'},
   laser:  {name:'갓바위 레이저',icon:'🙏',max:5,desc:'소원의 레이저',nja:'石仏レーザー',dja:'願い事のレーザー'},
+  mandu:  {name:'만두튀김 러시',icon:'🍘',max:5,desc:'바삭한 만두튀김 투척+착탄 폭발',nja:'揚げ餃子ラッシュ',dja:'サクサク揚げ餃子を投げて着弾爆発'},
 };
 function wstats(id,lv){
   switch(id){
@@ -1007,6 +1078,7 @@ function wstats(id,lv){
     case 'orbit':return{dmg:9+6*lv,count:1+Math.floor(lv/2),r:66+8*lv,rot:2.6+0.3*lv};
     case 'frost':return{dmg:10+8*lv,int:Math.max(2.4,5.2-0.55*lv),r:120+14*lv,slow:0.5,slowT:1.6+0.3*lv};
     case 'laser':return{dps:22+13*lv,range:400+20*lv,w:5+lv};
+    case 'mandu':return{dmg:15+9*lv,count:2+Math.floor(lv/2),int:Math.max(0.9,2.3-0.28*lv),spd:400,range:480,splash:55+12*lv,pierce:0};
   }
 }
 const STATS={
@@ -1021,7 +1093,7 @@ const STATS={
 function resetGame(){
   player={x:WORLD_W/2,y:WORLD_H/2,r:16,hp:100,maxhp:100,speed:175,level:1,xp:0,xpNext:6,
     weapons:{quack:1},dmgMul:1,hasteMul:1,magnetR:95,regen:0,ang:0,moving:false,hurtT:0,
-    fireT:0,metT:2,zapT:1,frostT:3,orbitA:0};
+    fireT:0,metT:2,zapT:1,frostT:3,manduT:1,orbitA:0,_lionsT:0};
   enemies=[];bullets=[];gems=[];pickups=[];parts=[];dnums=[];mets=[];ltns=[];
   camX=player.x-LW/2;camY=player.y-LH/2;shake=0;gameT=0;kills=0;spawnT=0;bossN=0;waveN=0;magnetAll=0;pendingLv=0;
   castleT=0;castleCd=0;trainT=-1;trainCd=0;eliteT=25;finalSpawned=false;cshots.length=0;
@@ -1122,7 +1194,7 @@ function killEnemy(e){
       gems.push({x:e.x+Math.cos(a)*rnd(4,24),y:e.y+Math.sin(a)*rnd(4,24),
         vx:Math.cos(a)*rnd(40,120),vy:Math.sin(a)*rnd(40,120),val:5,tier:1,seed:rnd(0,TAU)});
     }
-    pickups.push({x:e.x,y:e.y-24,kind:Math.random()<0.5?'corn':'magnet',seed:rnd(0,TAU),life:25});
+    {const er=Math.random();pickups.push({x:e.x,y:e.y-24,kind:er<0.4?'corn':er<0.75?'magnet':'mungtigi',seed:rnd(0,TAU),life:25});}
     boomParts(e.x,e.y,'#ffd93d',20);
   }
   if(e.type==='finalboss'){gameClear();return;}
@@ -1158,6 +1230,20 @@ function updWeapons(dt){
         const a=p.ang+(i-(s.count-1)/2)*0.12+rnd(-0.03,0.03);
         bullets.push({x:p.x+Math.cos(a)*24,y:p.y+Math.sin(a)*24,
           vx:Math.cos(a)*s.spd,vy:Math.sin(a)*s.spd,dmg:s.dmg*p.dmgMul,pierce:s.pierce,life:1.4});
+      }
+      sShoot();
+    }
+  }
+  // mandu rush (fried mandu projectiles + splash)
+  if(W.mandu){
+    const s=wstats('mandu',W.mandu);
+    p.manduT-=dt;
+    if(p.manduT<=0&&ne&&dist2(p.x,p.y,ne.x,ne.y)<s.range*s.range){
+      p.manduT=s.int*p.hasteMul;
+      for(let i=0;i<s.count;i++){
+        const a=p.ang+(i-(s.count-1)/2)*0.14+rnd(-0.04,0.04);
+        bullets.push({x:p.x+Math.cos(a)*24,y:p.y+Math.sin(a)*24,
+          vx:Math.cos(a)*s.spd,vy:Math.sin(a)*s.spd,dmg:s.dmg*p.dmgMul,pierce:s.pierce,life:1.3,splash:s.splash,mandu:true});
       }
       sShoot();
     }
@@ -1411,6 +1497,7 @@ function update(dt,t){
   if(p._spdT>0){p._spdT-=dt;if(p._spdT<=0)p.speed/=1.4;}
   if(p._dmgT>0){p._dmgT-=dt;if(p._dmgT<=0)p.dmgMul/=1.5;}
   if(p._hstT>0){p._hstT-=dt;if(p._hstT<=0)p.hasteMul/=0.7;}
+  if(p._lionsT>0){p._lionsT-=dt;if(p._lionsT<=0)p.dmgMul/=2;}
   if(p._xpT>0)p._xpT-=dt;
   if(p._invT>0)p._invT-=dt;
   if(p._giantT>0){
@@ -1564,7 +1651,14 @@ function update(dt,t){
           const ka=Math.atan2(b.vy,b.vx);
           damageEnemy(e,b.dmg,Math.cos(ka)*10,Math.sin(ka)*10);
           boomParts(b.x,b.y,'#ffe27a',3);sHit();
-          if(b.pierce>0)b.pierce--;else{dead=true;}
+          if(b.splash){
+            boomParts(b.x,b.y,'#ffb020',10);
+            for(const e2 of enemies){
+              if(e2.hp>0&&e2!==e&&dist2(b.x,b.y,e2.x,e2.y)<b.splash*b.splash)damageEnemy(e2,b.dmg*0.6,0,0);
+            }
+            dead=true;
+          }
+          else if(b.pierce>0)b.pierce--;else{dead=true;}
           break;
         }
       }
@@ -1620,14 +1714,16 @@ function update(dt,t){
       else if(pk.kind==='giant')applyGiant();
       else if(pk.kind==='wing')applyFly();
       else if(pk.kind==='corn'){p.hp=Math.min(p.maxhp,p.hp+30);dnums.push({x:p.x,y:p.y-30,txt:'+30',t:0.8,col:'#7dff8a'});}
+      else if(pk.kind==='mungtigi'){p.hp=Math.min(p.maxhp,p.hp+60);dnums.push({x:p.x,y:p.y-30,txt:'+60',t:0.9,col:'#7dff8a'});waveBanner(T('bene_mung'));}
       else{magnetAll=3;waveBanner(T('magnet'));}
       boomParts(p.x,p.y,'#7dff8a',10);
     }
   }
   // occasional pickups
   if(Math.random()<dt*0.03){
+    const pr=Math.random(),pkk=pr<0.5?'corn':pr<0.82?'magnet':'mungtigi';
     pickups.push({x:clamp(p.x+rnd(-400,400),40,WORLD_W-40),y:clamp(p.y+rnd(-300,300),40,WORLD_H-40),
-      kind:Math.random()<0.6?'corn':'magnet',seed:rnd(0,TAU),life:25});
+      kind:pkk,seed:rnd(0,TAU),life:25});
   }
   // bombs (rarer, big damage)
   if(Math.random()<dt*0.012){
@@ -2310,6 +2406,7 @@ function triggerBenefit(L){
     case 'tower': p.hasteMul*=0.7;p._hstT=20;waveBanner(T('bene_tower'));break;
     case 'canal': upgradeRandomWeapon();waveBanner(T('bene_canal'));break;
     case 'kushida': p._invT=8;waveBanner(T('bene_kushida'));break;
+    case 'lions': p.dmgMul*=2;p._lionsT=10;waveBanner(T('bene_lions'));break;
   }
   addScore(30);sPick();
 }
