@@ -282,13 +282,13 @@ const pond={x:WORLD_W*0.72,y:WORLD_H*0.3,rx:150,ry:95};
 const LANDMARKS=[
   {f:'station',x:420,y:260,label:'🚉 대구역',lja:'🚉 大邱駅',beneCd:0},
   {f:'torii',x:1330,y:350,label:'🏃 동성로',lja:'🏃 東城路',beneCd:0},
-  {f:'shrine',x:1560,y:300,label:'🙏 팔공산 갓바위',lja:'🙏 八公山石仏',beneCd:0},
+  {f:'shrine',x:1400,y:1000,label:'🙏 팔공산 갓바위',lja:'🙏 八公山石仏',beneCd:0,br:300,cr:400,sy:120},
   {f:'yatai',x:2030,y:860,label:'🏮 서문시장',lja:'🏮 西門市場',beneCd:0},
   {f:'castle',x:540,y:1500,label:'🏯 달성토성',lja:'🏯 達城土城',beneCd:0},
   {f:'retro',x:2130,y:1660,label:'🚂 근대골목',lja:'🚂 近代路地',beneCd:0},
   {f:'school',x:1380,y:1920,label:'🎓 계명대',lja:'🎓 啓明大学',beneCd:0},
   {f:'tower',x:1960,y:380,label:'🗼 83타워',lja:'🗼 83タワー',beneCd:0},
-  {f:'canal',x:900,y:1050,label:'🎡 이월드',lja:'🎡 イーワールド',beneCd:0},
+  {f:'canal',x:900,y:1050,label:'🎡 이월드',lja:'🎡 イーワールド',beneCd:0,br:170,cr:300,sy:90},
   {f:'kushida',x:2320,y:1230,label:'🔥 대프리카',lja:'🔥 テグリカ',beneCd:0},
   {f:'ohori',x:1150,y:1450,label:'🌳 수성못',lja:'🌳 寿城池',beneCd:0},
   {f:'lions',x:2450,y:300,label:'⚾ 라이온즈파크',lja:'⚾ ライオンズパーク',beneCd:0},
@@ -335,6 +335,97 @@ function drawLions(px,py,t){
   ctx.fillStyle='#7dff8a';ctx.font='900 11px sans-serif';ctx.textAlign='center';
   ctx.fillText('LIONS',px,py-94);
   HL(px-38,py-40,30,12);
+}
+function drawPalgongsan(px,py,t){
+  // ---- big mountain ----
+  softShadow(px,py+80,320,80,0.35);
+  // far ridge
+  let g=gradC(px-160,py-200,40,420,'#8aa578','#5a7a52');
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.moveTo(px-340,py+80);
+  ctx.quadraticCurveTo(px-260,py-140,px-170,py-170);
+  ctx.quadraticCurveTo(px-90,py-200,px-30,py-120);
+  ctx.quadraticCurveTo(px+40,py-60,px+90,py-110);
+  ctx.quadraticCurveTo(px+180,py-190,px+250,py-90);
+  ctx.quadraticCurveTo(px+300,py-20,px+340,py+80);
+  ctx.closePath();ctx.fill();
+  // main mass
+  g=gradC(px,py-120,30,400,'#6d8f63','#3d5c38');
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.moveTo(px-290,py+80);
+  ctx.quadraticCurveTo(px-210,py-60,px-120,py-160);
+  ctx.quadraticCurveTo(px-60,py-245,px+10,py-252);
+  ctx.quadraticCurveTo(px+70,py-258,px+110,py-190);
+  ctx.quadraticCurveTo(px+150,py-295,px+205,py-272);
+  ctx.quadraticCurveTo(px+265,py-200,px+290,py+80);
+  ctx.closePath();ctx.fill();
+  // rocky peak cap
+  ctx.fillStyle='#9aa0a8';
+  ctx.beginPath();
+  ctx.moveTo(px+150,py-295);ctx.quadraticCurveTo(px+205,py-272,px+225,py-240);
+  ctx.lineTo(px+185,py-230);ctx.quadraticCurveTo(px+165,py-260,px+150,py-295);
+  ctx.closePath();ctx.fill();
+  // drifting clouds
+  ctx.fillStyle='rgba(255,255,255,.85)';
+  const ccx=px+Math.sin(t/2400)*40;
+  for(const co of [[-140,-250,1],[170,-210,0.8],[-20,-290,0.7]]){
+    const qx=ccx+co[0],qy=py+co[1],qs=co[2];
+    ctx.beginPath();
+    ctx.arc(qx,qy,18*qs,0,TAU);ctx.arc(qx+20*qs,qy+4*qs,14*qs,0,TAU);ctx.arc(qx-20*qs,qy+5*qs,13*qs,0,TAU);
+    ctx.fill();
+  }
+  // pine trees on slopes
+  const pine=(tx,ty,ps)=>{
+    ctx.fillStyle='#5a3d24';ctx.fillRect(tx-2*ps,ty-8*ps,4*ps,10*ps);
+    ctx.fillStyle='#2e6b34';
+    for(let pi=0;pi<3;pi++){
+      const pw=(15-pi*3.5)*ps,ph2=12*ps,py2=ty-(8+pi*9)*ps;
+      ctx.beginPath();ctx.moveTo(tx-pw/2,py2);ctx.lineTo(tx+pw/2,py2);ctx.lineTo(tx,py2-ph2);ctx.closePath();ctx.fill();
+    }
+  };
+  pine(px-200,py-10,1.1);pine(px-140,py-70,0.9);pine(px-60,py-130,1);
+  pine(px+40,py-120,0.85);pine(px+250,py-30,1.1);pine(px-240,py+40,1);
+  pine(px+120,py+30,0.9);pine(px-90,py+20,1.05);
+  // temple at base
+  const tx=px-150,ty=py+52;
+  ELL(tx,ty+22,52,8,'rgba(0,0,0,.25)');
+  ctx.fillStyle='#8a5a3b';ctx.fillRect(tx-40,ty-28,80,32);
+  ctx.fillStyle='#3f6b4f';
+  ctx.beginPath();ctx.moveTo(tx-54,ty-26);ctx.lineTo(tx,ty-60);ctx.lineTo(tx+54,ty-26);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#2c4f38';
+  ctx.beginPath();ctx.moveTo(tx-40,ty-28);ctx.lineTo(tx,ty-52);ctx.lineTo(tx+40,ty-28);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#ffd93d';ctx.fillRect(tx-9,ty-20,18,24);
+  ctx.fillStyle='#5a3d24';ctx.fillRect(tx-9,ty-20,18,4);
+  // ---- GATBAWI: stone buddha with gat on main peak ----
+  const gx=px+188,gy=py-272;
+  ELL(gx,gy+16,34,7,'rgba(0,0,0,.25)');
+  ctx.fillStyle='#8a8f9a';RR(gx-28,gy,56,20,4);ctx.fill();
+  ctx.fillStyle='#a5abb6';RR(gx-28,gy,56,7,4);ctx.fill();
+  const sbg=gradC(gx-10,gy-40,4,44,'#b9bfc9','#7e8490');
+  ctx.fillStyle=sbg;
+  ctx.beginPath();ctx.ellipse(gx,gy-32,20,26,0,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.ellipse(gx,gy-10,30,12,0,0,TAU);ctx.fill();
+  HL(gx-12,gy-44,10,14);
+  ctx.fillStyle=gradC(gx-4,gy-66,2,14,'#c3c9d4','#8b919c');
+  ctx.beginPath();ctx.arc(gx,gy-60,13,0,TAU);ctx.fill();
+  ctx.fillStyle='#9aa0ab';ctx.beginPath();ctx.arc(gx,gy-71,5,0,TAU);ctx.fill();
+  ctx.fillStyle='#5a5f6a';
+  ctx.beginPath();ctx.arc(gx-5,gy-60,1.6,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.arc(gx+5,gy-60,1.6,0,TAU);ctx.fill();
+  ctx.strokeStyle='#5a5f6a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(gx,gy-57,5,0.3,Math.PI-0.3);ctx.stroke();
+  // the GAT (wide flat hat) - signature of gatbawi
+  ctx.fillStyle='#6e7480';
+  ctx.beginPath();ctx.ellipse(gx,gy-70,26,7,0,0,TAU);ctx.fill();
+  ctx.fillStyle='#7e8490';ctx.beginPath();ctx.ellipse(gx,gy-72,26,5,0,Math.PI,0);ctx.fill();
+  ctx.fillStyle='#5a5f6a';RR(gx-9,gy-86,18,13,6);ctx.fill();
+  HL(gx-15,gy-74,10,3);
+  // halo glow
+  const halo=ctx.createRadialGradient(gx,gy-50,6,gx,gy-50,44);
+  halo.addColorStop(0,'rgba(255,240,180,.35)');halo.addColorStop(1,'rgba(255,240,180,0)');
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(gx,gy-50,44,0,TAU);ctx.fill();
 }
 function drawOhori(px,py,t){
   // big park
@@ -394,22 +485,43 @@ function drawTower(px,py){
   RF(px+30,py-86,4,14,2,"#f2f2f2");
   HL(px+32,py-20,5,22);
 }
-function drawFerris(px,py){ // e-world ferris wheel
-  SH(px+30,py+46,28);
-  ctx.strokeStyle="#5b6b7f";ctx.lineWidth=6;ctx.lineCap="round";
-  ctx.beginPath();ctx.moveTo(px+30,py+22);ctx.lineTo(px+8,py+46);
-  ctx.moveTo(px+30,py+22);ctx.lineTo(px+52,py+46);ctx.stroke();
-  ctx.lineWidth=3;ctx.strokeStyle="#e05252";
-  ctx.beginPath();ctx.arc(px+30,py+20,22,0,TAU);ctx.stroke();
-  for(let i=0;i<6;i++){const a=i/6*TAU;
-    ctx.beginPath();ctx.moveTo(px+30,py+20);
-    ctx.lineTo(px+30+Math.cos(a)*22,py+20+Math.sin(a)*22);ctx.stroke();}
-  const cols=["#ffd93d","#5cb8ff","#ff7d9c","#7dff8a","#ff9a5c","#b48cff"];
-  for(let i=0;i<6;i++){const a=i/6*TAU;
-    ctx.fillStyle=cols[i];ctx.beginPath();
-    ctx.arc(px+30+Math.cos(a)*22,py+20+Math.sin(a)*22,4.5,0,TAU);ctx.fill();}
-  ctx.fillStyle="#ffd93d";ctx.beginPath();ctx.arc(px+30,py+20,5,0,TAU);ctx.fill();
-  FKHL(px+14,py+4,12,3);
+function drawFerris(px,py,t){ // e-world big ferris wheel
+  const cx=px,cy=py-60,R=70;
+  SH(cx,py+56,64);
+  // support legs
+  ctx.strokeStyle='#5b6b7f';ctx.lineWidth=11;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx-48,py+54);
+  ctx.moveTo(cx,cy);ctx.lineTo(cx+48,py+54);ctx.stroke();
+  ctx.strokeStyle='#7c8b9f';ctx.lineWidth=5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx,py+54);ctx.stroke();
+  // wheel rings
+  ctx.strokeStyle='#e05252';ctx.lineWidth=6;
+  ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.stroke();
+  ctx.lineWidth=3;ctx.strokeStyle='#f07070';
+  ctx.beginPath();ctx.arc(cx,cy,R*0.6,0,TAU);ctx.stroke();
+  // spokes (slow rotation)
+  const wa=t/3000;
+  ctx.lineWidth=3;ctx.strokeStyle='#e05252';
+  for(let i=0;i<8;i++){const a=wa+i/8*TAU;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.stroke();}
+  // cabins
+  const cols=['#ffd93d','#5cb8ff','#ff7d9c','#7dff8a','#ff9a5c','#b48cff','#ff5c5c','#5cffd1'];
+  for(let i=0;i<8;i++){const a=wa+i/8*TAU;
+    const gx=cx+Math.cos(a)*R,gy=cy+Math.sin(a)*R;
+    ctx.fillStyle='#8a6a3f';ctx.fillRect(gx-2,gy-16,4,10);
+    ctx.fillStyle=cols[i];RR(gx-10,gy-8,20,15,5);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.8)';RR(gx-7,gy-5,14,7,3);ctx.fill();
+  }
+  // hub
+  const hg=gradC(cx-3,cy-3,1,10,'#ffe9a8','#f5a623');
+  ctx.fillStyle=hg;ctx.beginPath();ctx.arc(cx,cy,10,0,TAU);ctx.fill();
+  HL(cx-4,cy-4,4,2.5);
+  // ticket booth
+  ctx.fillStyle='#fff';RR(cx+52,py+28,48,28,4);ctx.fill();
+  ctx.fillStyle='#e05252';RR(cx+52,py+28,48,11,4);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='900 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('매표소',cx+76,py+37);
+  ctx.fillStyle='#5b6b7f';ctx.fillRect(cx+70,py+44,12,12);
 }
 function drawHeat(px,py){ // daefrica blazing sun
   SH(px+30,py+44,28);
@@ -508,24 +620,26 @@ function drawGround(camX,camY,t){
   // fukuoka landmarks
   for(const L of LANDMARKS){
     const lx=L.x-camX, ly=L.y-camY;
-    if(lx<-220||lx>LW+220||ly<-220||ly>LH+220)continue;
+    const cr=L.cr||220;
+    if(lx<-cr||lx>LW+cr||ly<-cr||ly>LH+cr)continue;
     if(L.f==='ohori')drawOhori(lx,ly,t);
      else if(L.f==='station')drawStation(lx,ly);
     else if(L.f==='torii')drawStreet(lx,ly);
-    else if(L.f==='shrine')drawShrine(lx,ly);
+    else if(L.f==='shrine')drawPalgongsan(lx,ly,t);
     else if(L.f==='yatai'){drawYatai(lx,ly,0);drawYatai(lx+44,ly+6,1);}
     else if(L.f==='castle')drawCastle(lx,ly);
     else if(L.f==='retro')drawRetro(lx,ly);
     else if(L.f==='school')drawSchool(lx,ly);
     else if(L.f==='tower')drawTower(lx,ly);
-    else if(L.f==='canal')drawFerris(lx,ly);
+    else if(L.f==='canal')drawFerris(lx,ly,t);
     else if(L.f==='kushida')drawHeat(lx,ly);
     else if(L.f==='lions')drawLions(lx,ly,t);
     // name sign
     ctx.font='900 13px sans-serif';ctx.textAlign='center';
     const tw=ctx.measureText(LL(L)).width;
-    ctx.fillStyle='rgba(10,14,28,.75)';RR(lx-tw/2-8,ly+58,tw+16,22,11);ctx.fill();
-    ctx.fillStyle='#ffe88f';ctx.fillText(LL(L),lx,ly+73);
+    const sy=L.sy||58;
+    ctx.fillStyle='rgba(10,14,28,.75)';RR(lx-tw/2-8,ly+sy,tw+16,22,11);ctx.fill();
+    ctx.fillStyle='#ffe88f';ctx.fillText(LL(L),lx,ly+sy+15);
   }
   // world border
   ctx.strokeStyle='rgba(60,30,10,.8)';ctx.lineWidth=14;ctx.setLineDash([26,14]);
@@ -1561,8 +1675,8 @@ function update(dt,t){
   for(const L of LANDMARKS){
     if(L.f==='station'||L.f==='castle'||L.f==='ohori')continue;
     if(L.beneCd>0){L.beneCd-=dt;continue;}
-    const bdx=p.x-L.x,bdy=p.y-L.y;
-    if(bdx*bdx+bdy*bdy<110*110)triggerBenefit(L);
+    const bdx=p.x-L.x,bdy=p.y-L.y,br=L.br||110;
+    if(bdx*bdx+bdy*bdy<br*br)triggerBenefit(L);
   }
   // ohori park: forced 2-lap jogging
   for(const L of LANDMARKS){
